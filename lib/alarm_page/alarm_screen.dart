@@ -195,12 +195,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
    */
   static Future<void> callbackAlarm(int idAlarm) async {
     print('Alarm fired! + $idAlarm');
-
+    doShowLocalNotification(idAlarm.toString());
+    AndroidAlarmManager.periodic(Duration.zero, idAlarm, callbackAlarm);
     // This will be null if we're running in the background.
     uiSendPort ??= IsolateNameServer.lookupPortByName(isolateName);
     uiSendPort?.send(idAlarm);
-    doShowLocalNotification(idAlarm.toString());
-    AndroidAlarmManager.periodic(Duration.zero, idAlarm, callbackAlarm);
   }
 
 
@@ -244,11 +243,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
   Update value inside element in list
    */
   void updateElementInsideList(int idAlarm) {
-
-    for(int i = 0; i< listDataAlarm.length ;i++) {
-      print(listDataAlarm[i].id);
-    }
-
     int index = listDataAlarm.indexWhere((element) => element.id == idAlarm.toString());
     DataAlarm current = listDataAlarm[index];
     current.yAxis +=3;
