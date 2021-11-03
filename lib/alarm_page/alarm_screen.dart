@@ -3,7 +3,6 @@
 
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:android_alarm_manager/android_alarm_manager.dart';
@@ -14,7 +13,7 @@ import 'package:sample_alarm/alarm_page/new_alarm_screen.dart';
 import 'package:sample_alarm/char_page/chart_screen.dart';
 import 'package:sample_alarm/model/data_alarm.dart';
 import 'package:sample_alarm/main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sample_alarm/util/base_textstyle.dart';
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({Key key}) : super(key: key);
@@ -25,14 +24,9 @@ class AlarmScreen extends StatefulWidget {
 
 class _AlarmScreenState extends State<AlarmScreen> {
 
-  int  _counter = 0;
   static SendPort uiSendPort;
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-
-  List<DataAlarm> listAlarm = [];
-
-
-
+  static List<DataAlarm> listDataAlarm = [];
 
   @override
   void initState() {
@@ -40,18 +34,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
     if(Platform.isAndroid){
       AndroidAlarmManager.initialize();
     }
-    listAlarm.add(DataAlarm(
-      id: "1",
-      x: "12:00",
-      y: 0,
-      alarmName: "First Alarm",
-      descript: "This is my first Alarm",
-      alarmDate: DateTime.now()
-    ));
     initPortListener();
     initFlutterLocalNotification();
   }
-
 
 
 
@@ -64,19 +49,19 @@ class _AlarmScreenState extends State<AlarmScreen> {
         actions: [
           TextButton(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ChartSCreen(data: listAlarm,)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ChartSCreen(data: listDataAlarm,)));
             }, child: Text("Chart",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-
-            ),
+            style: BaseStyle.ts12w600White,
           )
           )
         ],
       ),
       body: ListView.builder(itemBuilder: (context, index) {
-        return Card(
+        return listDataAlarm.length == 0
+            ? Center(
+          child: Text('Alarm is empty'),
+        )
+            : Card(
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Container(
@@ -87,31 +72,27 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(listAlarm[index].alarmName, style: TextStyle(fontSize: 20),),
+                      Text(listDataAlarm[index].alarmName, style: TextStyle(fontSize: 20),),
                       SizedBox(
                         height: 12,
                       ),
-                      Text(listAlarm[index].descript == null
+                      Text(listDataAlarm[index].descript == null
                           ? ''
-                          : listAlarm[index].descript
+                          : listDataAlarm[index].descript
                       )
                     ],
                   ),
-                  Text("${listAlarm[index].alarmDate.hour} : ${listAlarm[index].alarmDate.minute}",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.deepPurple
-                  ),)
+                  Text("${listDataAlarm[index].alarmDate.hour} : ${listDataAlarm[index].alarmDate.minute}",
+                    style: BaseStyle.ts22w600purple)
                 ],
               ),
             ),
           ),
-          margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          elevation: 2,
+          margin: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+          elevation: 1,
         );
       },
-        itemCount: listAlarm.length,
+        itemCount: listDataAlarm.length,
       ),
 
       floatingActionButton: FloatingActionButton(
@@ -121,9 +102,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
             MaterialPageRoute(builder: (context) => NewAlarmScreen())
           );
           if(result != null){
+            print(result.alarmDate);
             setState(() {
-              listAlarm.add(result);
+              listDataAlarm.add(result);
             });
+            await AndroidAlarmManager.oneShotAt(result.alarmDate, int.parse(result.id), callbackAlarm);
           }
         },
         child: Icon(
@@ -135,13 +118,20 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 
 
+  /*
+  init port listener
+   */
   void initPortListener() {
     port.listen((message) async {
-      return await _incrementCounter();
+      return await updateYaxisAlarm(message);
     });
   }
 
 
+
+  /*
+  init flutter local notification
+   */
   void initFlutterLocalNotification() {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -184,41 +174,40 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 
 
-
   /*
   on select local notification
    */
   Future onSelectNotification(String payload) async {
-    await AndroidAlarmManager.cancel(1);
+    print('on select $payload');
+    await AndroidAlarmManager.cancel(int.parse(payload));
     if (payload != null) {
       debugPrint('notification payload: $payload');
     }
     await Navigator.push(
       context,
-      MaterialPageRoute<void>(builder: (context) => ChartSCreen(data: listAlarm,)),
+      MaterialPageRoute<void>(builder: (context) => ChartSCreen(data: listDataAlarm,)),
     );
   }
 
 
   /*
-  callback when aalam
+  callback after alarm fired
    */
-  static Future<void> callbackAlarm() async {
-    print('Alarm fired!');
-
-    // Get the previous cached count and increment it.
-    final prefs = await SharedPreferences.getInstance();
-    int currentCount = prefs.getInt(countKey) ?? 0;
-    await prefs.setInt(countKey, currentCount + 1);
+  static Future<void> callbackAlarm(int idAlarm) async {
+    print('Alarm fired! + $idAlarm');
 
     // This will be null if we're running in the background.
     uiSendPort ??= IsolateNameServer.lookupPortByName(isolateName);
-    uiSendPort?.send(null);
-    doShowLocalNotification();
+    uiSendPort?.send(idAlarm);
+    doShowLocalNotification(idAlarm.toString());
+    AndroidAlarmManager.periodic(Duration.zero, idAlarm, callbackAlarm);
   }
 
 
-  static Future<void> doShowLocalNotification() async {
+  /*
+  show local notification function
+   */
+  static Future<void> doShowLocalNotification(String idAlarm) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
         'your channel id', 'your channel name', 'your channel description',
@@ -237,24 +226,34 @@ class _AlarmScreenState extends State<AlarmScreen> {
     const NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
-        0, 'plain title', 'plain body', platformChannelSpecifics,
-        payload: 'item x');
+        int.parse(idAlarm), 'plain title', 'plain body', platformChannelSpecifics,
+        payload: idAlarm);
   }
 
-  Future<void> _incrementCounter() async {
-    print('Increment counter!');
 
-    // Ensure we've loaded the updated count from the background isolate.
-    await prefs.reload();
-
-    setState(() {
-      _counter++;
-    });
+  /*
+  called update elementY when receive message port
+   */
+  Future<void> updateYaxisAlarm(int message) async {
+    updateElementInsideList(message);
   }
 
 
 
+  /*
+  Update value inside element in list
+   */
+  void updateElementInsideList(int idAlarm) {
 
+    for(int i = 0; i< listDataAlarm.length ;i++) {
+      print(listDataAlarm[i].id);
+    }
 
+    int index = listDataAlarm.indexWhere((element) => element.id == idAlarm.toString());
+    DataAlarm current = listDataAlarm[index];
+    current.yAxis +=3;
+    listDataAlarm[listDataAlarm.indexWhere((element) => element.id == idAlarm.toString())] = current;
+
+  }
 
 }

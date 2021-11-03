@@ -9,22 +9,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sample_alarm/main.dart';
+import 'package:sample_alarm/util/Validator.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  /*
+  Several unit test for validator create new alarm
+   */
+  test("Invalid caused empty and null hour and minute", (){
+    var isValid = Validator.isValid('', null, null);
+    expect(isValid, false);
   });
+
+
+  test("Invalid cause null hour and minute", () {
+    var isValid = Validator.isValid("Alarm Name", null, null);
+    expect(isValid, false);
+  });
+
+
+  test("Invalid cause null minute", (){
+    var isValid = Validator.isValid("Alarm Name", 10, null);
+    expect(isValid, false);
+  });
+
+  test ("Valid cause notEmpty and not null hour and minute", () {
+    var isValid = Validator.isValid("Alarm Name", 10, 20);
+    expect(isValid, true);
+  });
+
+
 }

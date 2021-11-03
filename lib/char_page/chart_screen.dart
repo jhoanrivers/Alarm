@@ -14,7 +14,6 @@ class ChartSCreen extends StatefulWidget {
 }
 
 class _ChartSCreenState extends State<ChartSCreen> {
-  bool animation;
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +24,31 @@ class _ChartSCreenState extends State<ChartSCreen> {
         data: widget.data,
         domainFn: (DataAlarm series,_) => series.xAxis,
         measureFn: (DataAlarm series, _) => series.yAxis,
-
+        labelAccessorFn: (DataAlarm series, _) => '${series.yAxis.toString()}s'
       )
     ];
 
-
     return Scaffold(
       appBar: AppBar(
-        title: Text("Alarm"),
+        title: Text("Chart Alarm Duration"),
       ),
-      body: Container(
-        child: charts.BarChart(series, animate: true,),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            child: Text('Berikut adalah diagram yang menunjukkan durasi alarm berbunyi sebelum user menekan/mengklik notification message'),
+          ),
+          Container(
+            padding: EdgeInsets.all(16),
+            height: MediaQuery.of(context).size.height*0.6,
+            child: charts.BarChart(
+              series,
+              animate: false,
+              barRendererDecorator: charts.BarLabelDecorator<String>(),
+            ),
+          ),
+        ],
       )
     );
   }

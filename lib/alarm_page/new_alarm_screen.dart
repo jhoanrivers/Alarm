@@ -63,11 +63,11 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
                     if(result){
                       DateTime currentDate =  new DateTime.now();
                       DataAlarm newData = DataAlarm(
-                          id: DateTime.now().toString(),
-                          x: "${hour}:${minute}",
+                          id: Random().nextInt(10000).toString(),
+                          x: "$hour:$minute",
                           y: 0,
                           alarmName: alarmNameController.text,
-                          descript: descriptionController.text,
+                          description: descriptionController.text,
                           alarmDate: DateTime(
                               currentDate.year,
                               currentDate.month,
@@ -99,6 +99,9 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
   }
 
 
+  /*
+  widget to show value hour and minute
+   */
   dateTimeWidget(){
     return Row(
       children: [
@@ -120,8 +123,10 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
   }
 
 
+  /*
+  called time picker function to select time
+   */
   Future<Null> selectTime(BuildContext context) async {
-
     final TimeOfDay picked = await showTimePicker(
       context: context,
       initialTime: selectedTime,
@@ -136,7 +141,9 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
 
   }
 
-
+  /*
+  widget for text time
+   */
   Widget buildTextTime(String value){
     return Text(
       value,
@@ -144,13 +151,17 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
     );
   }
 
-
-
+  /*
+  when app is closed
+   */
   Future<bool> onWillPopScope() async{
     Navigator.pop(context,null);
     return true;
   }
 
+  /*
+  widget which show alarm name field
+   */
   buildAlarmNameWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,6 +191,9 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
     );
   }
 
+  /*
+  widget for description field
+   */
   buildAlarmDescription() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +217,9 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
     );
   }
 
-
+  /*
+  widget which show alarm set time
+   */
   buildAlarmTimeWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
