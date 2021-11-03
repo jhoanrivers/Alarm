@@ -8,15 +8,13 @@ Device and Tools
 - Tested on Realme XT - Android 11
 
 ## Introduction
- 
-For sure currently Flutter has come with his new spectacular version 2.5.0, but I hope you still can run this code on your local.
-honestly nothing special needed to run this application. plug your phone to your device, compile and Voilaa.. I am sure it works properly :D (In Android), didnt test yet for IOS. 
+This is a sample application of alarm manager. It will allow user to set alarm, show notification when alarm is ringin and record duration of how long alarm rang.
 
 For apk link in google drive : https://drive.google.com/file/d/11F0VlXhxGL_Vd5NM8ngEICyf0u_SXJds/view?usp=sharing
 For Demo app, you can access in : https://youtu.be/muiLseRMZQs
 
 
-## How I Code It
+## Functions
 
 As feature needed the apk have several functions. There are :
 - Set Alarm 
@@ -51,13 +49,36 @@ so just like:
 for every periodic alarm called :
 y = y+3
 
-So that is all the explanation for every concept for creating this project.
 
 
-Auhor,
+## Interfaces
 
-Jhoan River 
- 
+1. Dashboard application
+The first screen when open application will show an empty screen. It is because there is no list data/ alarm which will be show.
+You can see the image below.
+
+![Image of Dashboard Screen](/assets/image1.jpeg)
+
+2. To make new alarm. Click + button which is a float action button. And user will be directed to new screen create new alarm
+
+![Image of New Alarm Screen](/assets/image2.jpeg)
+
+3. After user finished create new alarm. alarm will be show in user dashboard.
+![Image of Dashboard With First Alarm Data](/assets/image3.jpeg)
+
+4. While waiting, I create a second alarm. and so the first alarm just rank.
+![Image of Dashboard With 2 Alarm](/assets/image4.jpeg)
+
+5. When I click the notification. It will redirect user to chart page.
+For every alarm ringing will take 3s long-time. In chat page shown that the duration of first alarm that has been clicked. by clicking the notification will stop the "ring duration". As you can see, the duration of the first alarm duration is 18s and the second alarm is 0s, because the second is not ring yet.
+![Image of Chart](/assets/image5.jpeg)
+
+6. And after the second alarm ring. I click it and it will redirect me to the chart page.
+![Image of Chart 2](/assets/image6.jpeg)
+
+
+So that is all the explanation for this project. For all your attention I say thank you.
+
 
 
 
