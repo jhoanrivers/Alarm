@@ -10,7 +10,10 @@ Device and Tools
 ## Introduction
  
 For sure currently Flutter has come with his new spectacular version 2.5.0, but I hope you still can run this code on your local.
-honestly nothing special needed to run this application. plug your phone to your device, compile and Voilaa.. I am sure it works properly :D (In Android), didnt test yet for IOS. I will also serve you apk link in google drive : https://drive.google.com/file/d/1adB9CVbJf63ig2YqNbc_RyW_NG7tUJ9g/view?usp=sharing
+honestly nothing special needed to run this application. plug your phone to your device, compile and Voilaa.. I am sure it works properly :D (In Android), didnt test yet for IOS. 
+
+For apk link in google drive : https://drive.google.com/file/d/11F0VlXhxGL_Vd5NM8ngEICyf0u_SXJds/view?usp=sharing
+For Demo app, you can access in : https://youtu.be/muiLseRMZQs
 
 
 ## How I Code It
@@ -49,7 +52,7 @@ for every periodic alarm called :
 y = y+3
 
 So that is all the explanation for every concept for creating this project.
-for Demo app, you can access in :
+
 
 Auhor,
 
