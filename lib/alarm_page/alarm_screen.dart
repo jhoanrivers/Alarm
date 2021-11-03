@@ -226,7 +226,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     const NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
-        int.parse(idAlarm), 'plain title', 'plain body', platformChannelSpecifics,
+        int.parse(idAlarm), 'Alarm is ringing', 'Alarm with id $idAlarm', platformChannelSpecifics,
         payload: idAlarm);
   }
 
